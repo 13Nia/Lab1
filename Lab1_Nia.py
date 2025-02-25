@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.preprocessing import LabelEncoder
+
 
 # For reading database datatypes:
 # file_path = 'texas.csv'
@@ -185,6 +187,23 @@ def calculate_covariance_correlation(df):
     
     return covariance_matrix, correlation_matrix
 
+
+#Task8 -------------------------------
+def normalize_data(df, numerical_columns):
+    for col in numerical_columns:
+        if col in df.columns:
+            min_val = df[col].min()
+            max_val = df[col].max()
+            df[col] = (df[col] - min_val) / (max_val - min_val)
+    return df
+
+#Task9------------------------------------
+def encode_categorical(df):
+    encoder = LabelEncoder()
+    df['state_encoded'] = encoder.fit_transform(df['state'])
+    return df
+
+
 headers, new_list = load_data('texas.csv')
 df = pd.DataFrame(new_list, columns=headers)
 
@@ -195,17 +214,30 @@ for col in numerical_columns:
     df[col] = pd.to_numeric(df[col], errors='coerce')
 
 df = clean_wmprison(df)
+df = normalize_data(df, numerical_columns)
+df = encode_categorical(df)
 
 statistics = calculate_statistics(df.values.tolist(), df.columns)
 
-for column, stats in statistics.items():
-    print(f"Statistics for {column}:")
-    for stat, value in stats.items():
-        print(f"  {stat}: {value}")
-    print()
+# for column, stats in statistics.items():
+#     print(f"Statistics for {column}:")
+#     for stat, value in stats.items():
+#         print(f"  {stat}: {value}")
+#     print()
 
-# plot_histograms_and_categorical(df)  
-# plot_scatter_plots(df)  
-# plot_splom(df)  
+# plot_histograms_and_categorical(df) ---------- for showing plot histograms and categorical 
+# plot_scatter_plots(df)   ------------ for showing scatter plots
+# plot_splom(df)   -------- for showing plot splom
 
-covariance, correlation = calculate_covariance_correlation(df)
+# covariance, correlation = calculate_covariance_correlation(df)      ---- for showing covariance correlation
+
+# print(df[numerical_columns].head())
+
+
+states = ['Texas', 'California', 'New York', 'Texas', 'Florida', 'California']
+
+encoder = LabelEncoder()
+
+encoded_states = encoder.fit_transform(states)
+print("Original States:", states)
+print("Encoded States:", encoded_states)
