@@ -2,6 +2,7 @@ import csv
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 # For reading database datatypes:
 # file_path = 'texas.csv'
@@ -89,7 +90,7 @@ def plot_histograms_and_categorical(df):
         plt.ylabel("Frequency")
         plt.show()
 
-    # Task4 Bar chart for state---------------------------------
+    # Task4 Bar chart for "state"---------------------------------
     categorical_column = "state"
     if categorical_column in df.columns and df[categorical_column].dtype == 'object':
         plt.figure(figsize=(12, 6))
@@ -100,7 +101,32 @@ def plot_histograms_and_categorical(df):
         plt.xticks(rotation=45)
         plt.show()
 
-#Task5 - Cleaning missing percentages ----------------------
+    #Task6 - Creating box plots and histograms for numeric and categorical variables -------
+    plt.figure(figsize=(12, 6))
+    sns.boxplot(x=df["state"], y=df["income"], palette="coolwarm")
+    plt.xlabel("State")
+    plt.ylabel("Income")
+    plt.title("Income Distribution by State")
+    plt.xticks(rotation=90)
+    plt.show()
+
+    plt.figure(figsize=(10, 6))
+    sns.histplot(df, x="poverty", hue="state", multiple="stack", bins=30, palette="viridis")
+    plt.xlabel("Poverty Rate")
+    plt.ylabel("Count")
+    plt.title("Poverty Rate Across Different States")
+    plt.legend(title="State", bbox_to_anchor=(1.05, 1), loc="upper left")
+    plt.show()
+
+    plt.figure(figsize=(12, 6))
+    sns.boxplot(x=df["state"], y=df["ur"], palette="Set2")
+    plt.xlabel("State")
+    plt.ylabel("Unemployment Rate")
+    plt.title("Unemployment Rate by State")
+    plt.xticks(rotation=90)
+    plt.show()
+
+# Task5 - Cleaning missing percentages ----------------------
 def clean_wmprison(df):
     column = "wmprison"
 
@@ -118,6 +144,46 @@ def clean_wmprison(df):
     df = df[(df[column] >= lower_bound) & (df[column] <= upper_bound)].copy()
     
     return df
+
+# Task6 ---------------------------
+def plot_scatter_plots(df):
+    strong_pairs = [("income", "poverty"), ("bmprison", "poverty"), ("wmprison", "income")]
+    weak_pairs = [("aidscapita", "statefip"), ("ur", "black"), ("year", "poverty")]
+
+    for x, y in strong_pairs:
+        plt.figure(figsize=(6, 4))
+        sns.scatterplot(x=df[x], y=df[y], alpha=0.5)
+        plt.title(f"Scatter Plot: {x} vs {y}")
+        plt.xlabel(x)
+        plt.ylabel(y)
+        plt.show()
+
+    for x, y in weak_pairs:
+        plt.figure(figsize=(6, 4))
+        sns.scatterplot(x=df[x], y=df[y], alpha=0.5)
+        plt.title(f"Scatter Plot: {x} vs {y}")
+        plt.xlabel(x)
+        plt.ylabel(y)
+        plt.show()
+
+def plot_splom(df):
+    selected_columns = ["income", "poverty", "bmprison", "wmprison", "ur", "aidscapita"]
+    sns.pairplot(df[selected_columns])
+    plt.show()
+
+
+#task7------------------------------
+def calculate_covariance_correlation(df):
+    numeric_df = df.select_dtypes(include=[np.number])  # Exclude non-numeric columns
+    covariance_matrix = numeric_df.cov()
+    correlation_matrix = numeric_df.corr()
+    
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
+    plt.title("Correlation Matrix")
+    plt.show()
+    
+    return covariance_matrix, correlation_matrix
 
 headers, new_list = load_data('texas.csv')
 df = pd.DataFrame(new_list, columns=headers)
@@ -138,4 +204,8 @@ for column, stats in statistics.items():
         print(f"  {stat}: {value}")
     print()
 
-# plot_histograms_and_categorical(df)
+# plot_histograms_and_categorical(df)  
+# plot_scatter_plots(df)  
+# plot_splom(df)  
+
+covariance, correlation = calculate_covariance_correlation(df)
