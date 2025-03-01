@@ -11,17 +11,17 @@ from sklearn.preprocessing import LabelEncoder
 # df = pd.read_csv(file_path)
 # print(df.info())
 
-def load_data(filename):
+def data_wakixtva(filename):
     mylist = []
-    with open(filename, newline='', encoding='utf-8') as my_dataset:
-        my_dataset_data = csv.reader(my_dataset, delimiter=',')
+    with open(filename, newline='', encoding='utf-8') as chemi_dataset:
+        my_dataset_data = csv.reader(chemi_dataset, delimiter=',')
         headers = next(my_dataset_data) 
         for row in my_dataset_data:
             mylist.append(row)
         return headers, mylist
 
 # Task2---------------------------------
-def calculate_statistics(data, headers):
+def statisticis_gamotvla(data, headers):
     df = pd.DataFrame(data, columns=headers)
 
     numerical_columns = ["statefip", "year", "bmprison", "wmprison", "alcohol", 
@@ -32,11 +32,11 @@ def calculate_statistics(data, headers):
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors='coerce')
 
-    stats_result = {}
+    stats_shedegi = {}
 
     for column in numerical_columns:
         if column in df.columns:
-            stats_result[column] = {
+            stats_shedegi[column] = {
                 'Total Values': df[column].count(),
                 'Missing Percentage': 100 * df[column].isna().mean(),
                 'Cardinality': df[column].nunique(),
@@ -65,7 +65,7 @@ def calculate_statistics(data, headers):
             second_mode_frequency = df[categorical_column].value_counts().iloc[1]
             second_mode_percentage = 100 * second_mode_frequency / total_values
 
-        stats_result[categorical_column] = {
+        stats_shedegi[categorical_column] = {
             'Total Values': total_values,
             'Missing Percentage': missing_percentage,
             'Cardinality': cardinality,
@@ -77,7 +77,7 @@ def calculate_statistics(data, headers):
             'Second Mode Percentage': second_mode_percentage
         }
 
-    return stats_result
+    return stats_shedegi
 
 # Task4---------------------------------
 def plot_histograms_and_categorical(df):
@@ -129,7 +129,7 @@ def plot_histograms_and_categorical(df):
     plt.show()
 
 # Task5 - Cleaning missing percentages ----------------------
-def clean_wmprison(df):
+def wmprison_gawmenda(df):
     column = "wmprison"
 
     df[column] = pd.to_numeric(df[column], errors='coerce')
@@ -168,7 +168,7 @@ def plot_scatter_plots(df):
         plt.ylabel(y)
         plt.show()
 
-def plot_splom(df):
+def splom_plot(df):
     selected_columns = ["income", "poverty", "bmprison", "wmprison", "ur", "aidscapita"]
     sns.pairplot(df[selected_columns])
     plt.show()
@@ -176,7 +176,7 @@ def plot_splom(df):
 
 #task7------------------------------
 def calculate_covariance_correlation(df):
-    numeric_df = df.select_dtypes(include=[np.number])  # Exclude non-numeric columns
+    numeric_df = df.select_dtypes(include=[np.number])
     covariance_matrix = numeric_df.cov()
     correlation_matrix = numeric_df.corr()
     
@@ -204,7 +204,7 @@ def encode_categorical(df):
     return df
 
 
-headers, new_list = load_data('texas.csv')
+headers, new_list = data_wakixtva('texas.csv')
 df = pd.DataFrame(new_list, columns=headers)
 
 numerical_columns = ["statefip", "year", "bmprison", "wmprison", "alcohol", 
@@ -213,11 +213,11 @@ numerical_columns = ["statefip", "year", "bmprison", "wmprison", "alcohol",
 for col in numerical_columns:
     df[col] = pd.to_numeric(df[col], errors='coerce')
 
-df = clean_wmprison(df)
+df = wmprison_gawmenda(df)
 df = normalize_data(df, numerical_columns)
 df = encode_categorical(df)
 
-statistics = calculate_statistics(df.values.tolist(), df.columns)
+statistics = statisticis_gamotvla(df.values.tolist(), df.columns)
 
 # for column, stats in statistics.items():
 #     print(f"Statistics for {column}:")
@@ -227,9 +227,9 @@ statistics = calculate_statistics(df.values.tolist(), df.columns)
 
 # plot_histograms_and_categorical(df) ---------- for showing plot histograms and categorical 
 # plot_scatter_plots(df)   ------------ for showing scatter plots
-# plot_splom(df)   -------- for showing plot splom
+# splom_plot(df)   -------- for showing plot splom
 
-# covariance, correlation = calculate_covariance_correlation(df)      ---- for showing covariance correlation
+# covariance, correlation = calculate_covariance_correlation(df)   -- for showing covariance correlation
 
 # print(df[numerical_columns].head())
 
